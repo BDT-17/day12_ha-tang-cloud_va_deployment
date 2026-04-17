@@ -1,9 +1,9 @@
-#  Code Lab: Deploy Your AI Agent to Production
+# 🚀 Code Lab: Deploy Your AI Agent to Production
 
-> **AICB-P1 · VinUniversity 2026**  
+> **AICB-P1 · VinUniversity 2026**
 > Thời gian: 3-4 giờ | Độ khó: Intermediate
 
-##  Mục Tiêu
+## 🎯 Mục Tiêu
 
 Sau khi hoàn thành lab này, bạn sẽ:
 - Hiểu sự khác biệt giữa development và production
@@ -14,24 +14,24 @@ Sau khi hoàn thành lab này, bạn sẽ:
 
 ---
 
-##  Yêu Cầu
+## 📋 Yêu Cầu
 
 ```bash
- Python 3.11+
- Docker & Docker Compose
- Git
- Text editor (VS Code khuyến nghị)
- Terminal/Command line
+✅ Python 3.11+
+✅ Docker & Docker Compose
+✅ Git
+✅ Text editor (VS Code khuyến nghị)
+✅ Terminal/Command line
 ```
 
 **Không cần:**
--  OpenAI API key (dùng mock LLM)
--  Credit card
--  Kinh nghiệm DevOps trước đó
+- ❌ OpenAI API key (dùng mock LLM)
+- ❌ Credit card
+- ❌ Kinh nghiệm DevOps trước đó
 
 ---
 
-##  Lộ Trình Lab
+## 🗺️ Lộ Trình Lab
 
 | Phần | Thời gian | Nội dung |
 |------|-----------|----------|
@@ -46,7 +46,7 @@ Sau khi hoàn thành lab này, bạn sẽ:
 
 ## Part 1: Localhost vs Production (30 phút)
 
-###  Concepts
+### 🎓 Concepts
 
 **Vấn đề:** "It works on my machine" — code chạy tốt trên laptop nhưng fail khi deploy.
 
@@ -58,7 +58,7 @@ Sau khi hoàn thành lab này, bạn sẽ:
 
 **Giải pháp:** 12-Factor App principles
 
-###  Exercise 1.1: Phát hiện anti-patterns
+### 📝 Exercise 1.1: Phát hiện anti-patterns
 
 ```bash
 cd 01-localhost-vs-production/develop
@@ -67,7 +67,7 @@ cd 01-localhost-vs-production/develop
 **Nhiệm vụ:** Đọc `app.py` và tìm ít nhất 5 vấn đề.
 
 <details>
-<summary> Gợi ý</summary>
+<summary>💡 Gợi ý</summary>
 
 Tìm:
 - API key hardcode
@@ -78,7 +78,7 @@ Tìm:
 
 </details>
 
-###  Exercise 1.2: Chạy basic version
+### 📝 Exercise 1.2: Chạy basic version
 
 ```bash
 pip install -r requirements.txt
@@ -94,7 +94,7 @@ curl http://localhost:8000/ask -X POST \
 
 **Quan sát:** Nó chạy! Nhưng có production-ready không?
 
-###  Exercise 1.3: So sánh với advanced version
+### 📝 Exercise 1.3: So sánh với advanced version
 
 ```bash
 cd ../production
@@ -108,11 +108,11 @@ python app.py
 | Feature | Basic | Advanced | Tại sao quan trọng? |
 |---------|-------|----------|---------------------|
 | Config | Hardcode | Env vars | ... |
-| Health check |  |  | ... |
+| Health check | ❌ | ✅ | ... |
 | Logging | print() | JSON | ... |
 | Shutdown | Đột ngột | Graceful | ... |
 
-###  Checkpoint 1
+### ✅ Checkpoint 1
 
 - [ ] Hiểu tại sao hardcode secrets là nguy hiểm
 - [ ] Biết cách dùng environment variables
@@ -123,7 +123,7 @@ python app.py
 
 ## Part 2: Docker Containerization (45 phút)
 
-###  Concepts
+### 🎓 Concepts
 
 **Vấn đề:** "Works on my machine" part 2 — Python version khác, dependencies conflict.
 
@@ -135,7 +135,7 @@ python app.py
 - Isolation
 - Reproducible builds
 
-###  Exercise 2.1: Dockerfile cơ bản
+### 📝 Exercise 2.1: Dockerfile cơ bản
 
 ```bash
 cd ../../02-docker/develop
@@ -148,7 +148,7 @@ cd ../../02-docker/develop
 3. Tại sao COPY requirements.txt trước?
 4. CMD vs ENTRYPOINT khác nhau thế nào?
 
-###  Exercise 2.2: Build và run
+### 📝 Exercise 2.2: Build và run
 
 ```bash
 # Build image
@@ -168,7 +168,7 @@ curl http://localhost:8000/ask -X POST \
 docker images my-agent:develop
 ```
 
-###  Exercise 2.3: Multi-stage build
+### 📝 Exercise 2.3: Multi-stage build
 
 ```bash
 cd ../production
@@ -185,9 +185,50 @@ docker build -t my-agent:advanced .
 docker images | grep my-agent
 ```
 
-###  Exercise 2.4: Docker Compose stack
+### 📝 Exercise 2.4: Docker Compose stack
 
 **Nhiệm vụ:** Đọc `docker-compose.yml` và vẽ architecture diagram.
+
+```mermaid
+flowchart TB
+    %% External
+    User[User / Client]
+
+    %% Nginx Layer
+    subgraph SL["Edge Layer"]
+        Nginx[Nginx</br>Reverse Proxy + Load Balancer]
+    end
+
+    %% Internal Network
+    subgraph IN["Internal Network"]
+        subgraph AS["Agent Service"]
+            Agent1[Agent Replica 1:</br>8000]
+            Agent2[Agent Replica 2:</br>8000]
+        end
+
+        %% Redis
+        Redis[(Redis</br>Session Cache</br>Rate Limiting)]
+
+        %% Qdrant
+        Qdrant[(Qdrant</br>Vector DB</br>RAG)]
+    end
+
+    %% Connections
+    User -->|HTTP/HTTPS :80/:443| Nginx
+
+    Nginx -->|Load balance| Agent1
+    Nginx -->|Load balance| Agent2
+
+    Agent1 -->|REDIS_URL| Redis
+    Agent2 -->|REDIS_URL| Redis
+
+    Agent1 -->|QDRANT_URL| Qdrant
+    Agent2 -->|QDRANT_URL| Qdrant
+
+    %% Styling (optional)
+    classDef infra fill:#f2f2f2,stroke:#999,stroke-width:1px;
+    class Redis,Qdrant infra;
+```
 
 ```bash
 docker compose up
@@ -206,7 +247,7 @@ curl http://localhost/ask -X POST \
   -d '{"question": "Explain microservices"}'
 ```
 
-###  Checkpoint 2
+### ✅ Checkpoint 2
 
 - [ ] Hiểu cấu trúc Dockerfile
 - [ ] Biết lợi ích của multi-stage builds
@@ -217,7 +258,7 @@ curl http://localhost/ask -X POST \
 
 ## Part 3: Cloud Deployment (45 phút)
 
-###  Concepts
+### 🎓 Concepts
 
 **Vấn đề:** Laptop không thể chạy 24/7, không có public IP.
 
@@ -231,7 +272,7 @@ curl http://localhost/ask -X POST \
 | Render | ⭐⭐ | 750h/month | Side projects |
 | Cloud Run | ⭐⭐⭐ | 2M requests | Production |
 
-###  Exercise 3.1: Deploy Railway (15 phút)
+### 📝 Exercise 3.1: Deploy Railway (15 phút)
 
 ```bash
 cd ../../03-cloud-deployment/railway
@@ -283,7 +324,7 @@ curl http://studen-agent-domain/ask -X POST \
   -d '{"question": ""}'
 ```
 
-###  Exercise 3.2: Deploy Render (15 phút)
+### 📝 Exercise 3.2: Deploy Render (15 phút)
 
 ```bash
 cd ../render
@@ -301,7 +342,7 @@ cd ../render
 
 **Nhiệm vụ:** So sánh `render.yaml` với `railway.toml`. Khác nhau gì?
 
-###  Exercise 3.3: (Optional) GCP Cloud Run (15 phút)
+### 📝 Exercise 3.3: (Optional) GCP Cloud Run (15 phút)
 
 ```bash
 cd ../production-cloud-run
@@ -311,7 +352,7 @@ cd ../production-cloud-run
 
 **Nhiệm vụ:** Đọc `cloudbuild.yaml` và `service.yaml`. Hiểu CI/CD pipeline.
 
-###  Checkpoint 3
+### ✅ Checkpoint 3
 
 - [ ] Deploy thành công lên ít nhất 1 platform
 - [ ] Có public URL hoạt động
@@ -322,7 +363,7 @@ cd ../production-cloud-run
 
 ## Part 4: API Security (40 phút)
 
-###  Concepts
+### 🎓 Concepts
 
 **Vấn đề:** Public URL = ai cũng gọi được = hết tiền OpenAI.
 
@@ -331,7 +372,7 @@ cd ../production-cloud-run
 2. **Rate Limiting** — Giới hạn số request/phút
 3. **Cost Guard** — Dừng khi vượt budget
 
-###  Exercise 4.1: API Key authentication
+### 📝 Exercise 4.1: API Key authentication
 
 ```bash
 cd ../../04-api-gateway/develop
@@ -346,25 +387,25 @@ Test:
 ```bash
 python app.py
 
-#  Không có key
+# ❌ Không có key
 curl http://localhost:8000/ask -X POST \
   -H "Content-Type: application/json" \
   -d '{"question": "Hello"}'
 
-#  Có key
+# ✅ Có key
 curl http://localhost:8000/ask -X POST \
   -H "X-API-Key: secret-key-123" \
   -H "Content-Type: application/json" \
   -d '{"question": "Hello"}'
 ```
 
-###  Exercise 4.2: JWT authentication (Advanced)
+### 📝 Exercise 4.2: JWT authentication (Advanced)
 
 ```bash
 cd ../production
 ```
 
-**Nhiệm vụ:** 
+**Nhiệm vụ:**
 1. Đọc `auth.py` — hiểu JWT flow
 2. Lấy token:
 ```bash
@@ -384,7 +425,7 @@ curl http://localhost:8000/ask -X POST \
   -d '{"question": "Explain JWT"}'
 ```
 
-###  Exercise 4.3: Rate limiting
+### 📝 Exercise 4.3: Rate limiting
 
 **Nhiệm vụ:** Đọc `rate_limiter.py` và trả lời:
 - Algorithm nào được dùng? (Token bucket? Sliding window?)
@@ -405,7 +446,7 @@ done
 
 Quan sát response khi hit limit.
 
-###  Exercise 4.4: Cost guard
+### 📝 Exercise 4.4: Cost guard
 
 **Nhiệm vụ:** Đọc `cost_guard.py` và implement logic:
 
@@ -413,7 +454,7 @@ Quan sát response khi hit limit.
 def check_budget(user_id: str, estimated_cost: float) -> bool:
     """
     Return True nếu còn budget, False nếu vượt.
-    
+
     Logic:
     - Mỗi user có budget $10/tháng
     - Track spending trong Redis
@@ -424,7 +465,7 @@ def check_budget(user_id: str, estimated_cost: float) -> bool:
 ```
 
 <details>
-<summary> Solution</summary>
+<summary>💡 Solution</summary>
 
 ```python
 import redis
@@ -435,11 +476,11 @@ r = redis.Redis()
 def check_budget(user_id: str, estimated_cost: float) -> bool:
     month_key = datetime.now().strftime("%Y-%m")
     key = f"budget:{user_id}:{month_key}"
-    
+
     current = float(r.get(key) or 0)
     if current + estimated_cost > 10:
         return False
-    
+
     r.incrbyfloat(key, estimated_cost)
     r.expire(key, 32 * 24 * 3600)  # 32 days
     return True
@@ -447,7 +488,7 @@ def check_budget(user_id: str, estimated_cost: float) -> bool:
 
 </details>
 
-###  Checkpoint 4
+### ✅ Checkpoint 4
 
 - [ ] Implement API key authentication
 - [ ] Hiểu JWT flow
@@ -458,7 +499,7 @@ def check_budget(user_id: str, estimated_cost: float) -> bool:
 
 ## Part 5: Scaling & Reliability (40 phút)
 
-###  Concepts
+### 🎓 Concepts
 
 **Vấn đề:** 1 instance không đủ khi có nhiều users.
 
@@ -468,7 +509,7 @@ def check_budget(user_id: str, estimated_cost: float) -> bool:
 3. **Graceful shutdown** — Hoàn thành requests trước khi tắt
 4. **Load balancing** — Phân tán traffic
 
-###  Exercise 5.1: Health checks
+### 📝 Exercise 5.1: Health checks
 
 ```bash
 cd ../../05-scaling-reliability/develop
@@ -492,7 +533,7 @@ def ready():
 ```
 
 <details>
-<summary> Solution</summary>
+<summary>💡 Solution</summary>
 
 ```python
 @app.get("/health")
@@ -516,7 +557,7 @@ def ready():
 
 </details>
 
-###  Exercise 5.2: Graceful shutdown
+### 📝 Exercise 5.2: Graceful shutdown
 
 **Nhiệm vụ:** Implement signal handler:
 
@@ -552,7 +593,7 @@ kill -TERM $PID
 # Quan sát: Request có hoàn thành không?
 ```
 
-###  Exercise 5.3: Stateless design
+### 📝 Exercise 5.3: Stateless design
 
 ```bash
 cd ../production
@@ -562,7 +603,7 @@ cd ../production
 
 **Anti-pattern:**
 ```python
-#  State trong memory
+# ❌ State trong memory
 conversation_history = {}
 
 @app.post("/ask")
@@ -573,7 +614,7 @@ def ask(user_id: str, question: str):
 
 **Correct:**
 ```python
-#  State trong Redis
+# ✅ State trong Redis
 @app.post("/ask")
 def ask(user_id: str, question: str):
     history = r.lrange(f"history:{user_id}", 0, -1)
@@ -582,7 +623,7 @@ def ask(user_id: str, question: str):
 
 Tại sao? Vì khi scale ra nhiều instances, mỗi instance có memory riêng.
 
-###  Exercise 5.4: Load balancing
+### 📝 Exercise 5.4: Load balancing
 
 **Nhiệm vụ:** Chạy stack với Nginx load balancer:
 
@@ -608,7 +649,7 @@ done
 docker compose logs agent
 ```
 
-###  Exercise 5.5: Test stateless
+### 📝 Exercise 5.5: Test stateless
 
 ```bash
 python test_stateless.py
@@ -619,7 +660,7 @@ Script này:
 2. Kill random instance
 3. Gọi tiếp — conversation vẫn còn không?
 
-###  Checkpoint 5
+### ✅ Checkpoint 5
 
 - [ ] Implement health và readiness checks
 - [ ] Implement graceful shutdown
@@ -631,11 +672,11 @@ Script này:
 
 ## Part 6: Final Project (60 phút)
 
-###  Objective
+### 🎯 Objective
 
 Build một production-ready AI agent từ đầu, kết hợp TẤT CẢ concepts đã học.
 
-###  Requirements
+### 📋 Requirements
 
 **Functional:**
 - [ ] Agent trả lời câu hỏi qua REST API
@@ -656,7 +697,7 @@ Build một production-ready AI agent từ đầu, kết hợp TẤT CẢ concep
 - [ ] Deploy lên Railway hoặc Render
 - [ ] Public URL hoạt động
 
-### 🏗 Architecture
+### 🏗️ Architecture
 
 ```
 ┌─────────────┐
@@ -682,7 +723,7 @@ Build một production-ready AI agent từ đầu, kết hợp TẤT CẢ concep
            └──────────┘
 ```
 
-###  Step-by-step
+### 📝 Step-by-step
 
 #### Step 1: Project setup (5 phút)
 
@@ -755,7 +796,7 @@ def ask(
     _rate_limit: None = Depends(check_rate_limit),
     _budget: None = Depends(check_budget)
 ):
-    # TODO: 
+    # TODO:
     # 1. Get conversation history from Redis
     # 2. Call LLM
     # 3. Save to Redis
@@ -847,7 +888,7 @@ railway up
 # Push lên GitHub → Connect Render → Deploy
 ```
 
-###  Validation
+### ✅ Validation
 
 Chạy script kiểm tra:
 
@@ -857,19 +898,19 @@ python check_production_ready.py
 ```
 
 Script sẽ kiểm tra:
--  Dockerfile exists và valid
--  Multi-stage build
--  .dockerignore exists
--  Health endpoint returns 200
--  Readiness endpoint returns 200
--  Auth required (401 without key)
--  Rate limiting works (429 after limit)
--  Cost guard works (402 when exceeded)
--  Graceful shutdown (SIGTERM handled)
--  Stateless (state trong Redis, không trong memory)
--  Structured logging (JSON format)
+- ✅ Dockerfile exists và valid
+- ✅ Multi-stage build
+- ✅ .dockerignore exists
+- ✅ Health endpoint returns 200
+- ✅ Readiness endpoint returns 200
+- ✅ Auth required (401 without key)
+- ✅ Rate limiting works (429 after limit)
+- ✅ Cost guard works (402 when exceeded)
+- ✅ Graceful shutdown (SIGTERM handled)
+- ✅ Stateless (state trong Redis, không trong memory)
+- ✅ Structured logging (JSON format)
 
-###  Grading Rubric
+### 🎓 Grading Rubric
 
 | Criteria | Points | Description |
 |----------|--------|-------------|
@@ -883,16 +924,16 @@ Script sẽ kiểm tra:
 
 ---
 
-##  Hoàn Thành!
+## 🎉 Hoàn Thành!
 
 Bạn đã:
--  Hiểu sự khác biệt dev vs production
--  Containerize app với Docker
--  Deploy lên cloud platform
--  Bảo mật API
--  Thiết kế hệ thống scalable và reliable
+- ✅ Hiểu sự khác biệt dev vs production
+- ✅ Containerize app với Docker
+- ✅ Deploy lên cloud platform
+- ✅ Bảo mật API
+- ✅ Thiết kế hệ thống scalable và reliable
 
-###  Next Steps
+### 📚 Next Steps
 
 1. **Monitoring:** Thêm Prometheus + Grafana
 2. **CI/CD:** GitHub Actions auto-deploy
@@ -900,7 +941,7 @@ Bạn đã:
 4. **Observability:** Distributed tracing với OpenTelemetry
 5. **Cost optimization:** Spot instances, auto-scaling
 
-###  Resources
+### 🔗 Resources
 
 - [12-Factor App](https://12factor.net/)
 - [Docker Best Practices](https://docs.docker.com/develop/dev-best-practices/)
@@ -910,23 +951,23 @@ Bạn đã:
 
 ---
 
-##  Q&A
+## 💬 Q&A
 
-**Q: Tôi không có credit card, có thể deploy không?**  
+**Q: Tôi không có credit card, có thể deploy không?**
 A: Có! Railway cho $5 credit, Render có 750h free tier.
 
-**Q: Mock LLM khác gì với OpenAI thật?**  
+**Q: Mock LLM khác gì với OpenAI thật?**
 A: Mock trả về canned responses, không gọi API. Để dùng OpenAI thật, set `OPENAI_API_KEY` trong env.
 
-**Q: Làm sao debug khi container fail?**  
+**Q: Làm sao debug khi container fail?**
 A: `docker logs <container_id>` hoặc `docker exec -it <container_id> /bin/sh`
 
-**Q: Redis data mất khi restart?**  
+**Q: Redis data mất khi restart?**
 A: Dùng volume: `volumes: - redis-data:/data` trong docker-compose.
 
-**Q: Làm sao scale trên Railway/Render?**  
+**Q: Làm sao scale trên Railway/Render?**
 A: Railway: `railway scale <replicas>`. Render: Dashboard → Settings → Instances.
 
 ---
 
-**Happy Deploying! **
+**Happy Deploying! 🚀**

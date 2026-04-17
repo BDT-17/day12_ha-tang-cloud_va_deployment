@@ -1,12 +1,12 @@
-#  Delivery Checklist — Day 12 Lab Submission
+# 📦 Delivery Checklist — Day 12 Lab Submission
 
-> **Student Name:** _________________________  
-> **Student ID:** _________________________  
-> **Date:** _________________________
+> **Student Name:** Bùi Đức Thắng
+> **Student ID:** 2A202600002
+> **Date:** 17/4/2026
 
 ---
 
-##  Submission Requirements
+## 📋 Submission Requirements
 
 Submit a **GitHub repository** containing:
 
@@ -88,15 +88,15 @@ your-repo/
 ```
 
 **Requirements:**
--  All code runs without errors
--  Multi-stage Dockerfile (image < 500 MB)
--  API key authentication
--  Rate limiting (10 req/min)
--  Cost guard ($10/month)
--  Health + readiness checks
--  Graceful shutdown
--  Stateless design (Redis)
--  No hardcoded secrets
+- ✅ All code runs without errors
+- ✅ Multi-stage Dockerfile (image < 500 MB)
+- ✅ API key authentication
+- ✅ Rate limiting (10 req/min)
+- ✅ Cost guard ($10/month)
+- ✅ Health + readiness checks
+- ✅ Graceful shutdown
+- ✅ Stateless design (Redis)
+- ✅ No hardcoded secrets
 
 ---
 
@@ -141,7 +141,32 @@ curl -X POST https://your-agent.railway.app/ask \
 - [Test results](screenshots/test.png)
 ```
 
-##  Pre-Submission Checklist
+---
+
+## 📤 Repository Structure
+
+```
+day12-[your-name]/
+├── MISSION_ANSWERS.md         # All exercise answers
+├── DEPLOYMENT.md              # Service URL and info
+├── README.md                  # Setup instructions
+├── app/                       # Source code
+├── utils/                     # Utilities
+├── Dockerfile                 # Docker config
+├── docker-compose.yml         # Stack config
+├── requirements.txt           # Dependencies
+├── .env.example               # Environment template
+├── .dockerignore              # Docker ignore
+├── railway.toml               # Deployment config
+└── screenshots/               # Deployment screenshots
+    ├── dashboard.png
+    ├── running.png
+    └── test.png
+```
+
+---
+
+## ✅ Pre-Submission Checklist
 
 - [ ] Repository is public (or instructor has access)
 - [ ] `MISSION_ANSWERS.md` completed with all exercises
@@ -156,7 +181,7 @@ curl -X POST https://your-agent.railway.app/ask \
 
 ---
 
-##  Self-Test
+## 🧪 Self-Test
 
 Before submitting, verify your deployment:
 
@@ -174,16 +199,16 @@ curl -H "X-API-Key: YOUR_KEY" https://your-app.railway.app/ask \
 # Should return 200
 
 # 4. Rate limiting
-for i in {1..15}; do 
+for i in {1..15}; do
   curl -H "X-API-Key: YOUR_KEY" https://your-app.railway.app/ask \
-    -X POST -d '{"user_id":"test","question":"test"}'; 
+    -X POST -d '{"user_id":"test","question":"test"}';
 done
 # Should eventually return 429
 ```
 
 ---
 
-##  Submission
+## 📝 Submission
 
 **Submit your GitHub repository URL:**
 
@@ -195,18 +220,18 @@ https://github.com/your-username/day12-agent-deployment
 
 ---
 
-##  Quick Tips
+## 💡 Quick Tips
 
-1.  Test your public URL from a different device
-2.  Make sure repository is public or instructor has access
-3.  Include screenshots of working deployment
-4.  Write clear commit messages
-5.  Test all commands in DEPLOYMENT.md work
-6.  No secrets in code or commit history
+1. ✅ Test your public URL from a different device
+2. ✅ Make sure repository is public or instructor has access
+3. ✅ Include screenshots of working deployment
+4. ✅ Write clear commit messages
+5. ✅ Test all commands in DEPLOYMENT.md work
+6. ✅ No secrets in code or commit history
 
 ---
 
-##  Need Help?
+## 🆘 Need Help?
 
 - Check [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 - Review [CODE_LAB.md](CODE_LAB.md)
@@ -215,4 +240,4 @@ https://github.com/your-username/day12-agent-deployment
 
 ---
 
-**Good luck! **
+**Good luck! 🚀**
